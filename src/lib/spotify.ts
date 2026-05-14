@@ -68,7 +68,8 @@ export async function getPlaylistTracks(accessToken: string, playlistId: string)
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch playlist tracks");
+    const errorBody = await response.text();
+    throw new Error(`Failed to fetch playlist tracks: ${response.status} ${response.statusText} - ${errorBody}`);
   }
 
   return response.json();

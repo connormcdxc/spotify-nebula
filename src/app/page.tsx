@@ -38,13 +38,21 @@ export default function Home() {
 
       let data;
       if (url) {
-        // Extract playlist ID from URL
-        const playlistId = url.split("playlist/")[1]?.split("?")[0];
+        // Robust ID extraction
+        let playlistId = "";
+        if (url.includes("playlist/")) {
+          playlistId = url.split("playlist/")[1]?.split("?")[0];
+        } else if (url.includes("spotify:playlist:")) {
+          playlistId = url.split("spotify:playlist:")[1];
+        } else if (!url.includes("/") && url.length > 10) {
+          playlistId = url; // Assume it's a direct ID
+        }
+
         if (playlistId) {
           const { getNebulaDataFromPlaylist } = await import("@/lib/spotify");
           data = await getNebulaDataFromPlaylist(token, playlistId);
         } else {
-          alert("Invalid Spotify Playlist URL");
+          alert("Invalid Spotify Playlist URL. Please copy it from the 'Share' menu in Spotify.");
         }
       } else if (session) {
         data = await getNebulaData(token);
