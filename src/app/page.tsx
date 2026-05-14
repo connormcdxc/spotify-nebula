@@ -59,8 +59,13 @@ export default function Home() {
       }
       
       if (data) setNebulaData(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fetch error:", error);
+      if (error.message?.includes("403")) {
+        alert("🔒 Access Denied (403): This playlist appears to be private. Please make the playlist 'Public' in Spotify, or 'Connect Your Identity' first if it's your own playlist.");
+      } else {
+        alert("Failed to fetch galaxy data. Please check the console for details.");
+      }
     } finally {
       setLoading(false);
     }
