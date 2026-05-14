@@ -59,3 +59,53 @@ export async function getNebulaData(accessToken: string) {
     return [];
   }
 }
+
+export async function getPlaylistTracks(accessToken: string, playlistId: string) {
+  const response = await fetch(`${SPOTIFY_ENDPOINT}/playlists/${playlistId}/tracks?limit=50`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch playlist tracks");
+  }
+
+  return response.json();
+}
+
+export async function getNebulaDataFromPlaylist(accessToken: string, playlistId: string) {
+  try {
+    const data = await getPlaylistTracks(accessToken, playlistId);
+    
+    if (!data?.items) return [];
+
+    return data.items
+      .filter((item: any) => item.track)
+      .map((item: any) => {
+        const track = item.track;
+        const hash = stringToHash(track.id);
+        
+        const energy = (hash % 100) / 100;
+        const valence = ((hash >> 2) % 100) / 100;
+        const danceability = ((hash >> 4) % 100) / 100;
+        const tempo = 60 + (hash % 120);
+
+        return {
+          id: track.id,
+          name: track.name,
+          artist: track.artists[0]?.name || "Unknown Artist",
+          albumArt: track.album.images[0]?.url || "",
+          previewUrl: track.preview_url,
+          externalUrl: track.external_urls.spotify,
+          energy,
+          valence,
+          tempo,
+          danceability,
+        };
+      });
+  } catch (error) {
+    console.error("Error fetching playlist nebula data:", error);
+    return [];
+  }
+}
