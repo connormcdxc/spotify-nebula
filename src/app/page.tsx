@@ -52,7 +52,11 @@ export default function Home() {
         data = await getNebulaData(session.accessToken);
       }
       
-      if (data) setNebulaData(data);
+      if (data && data.length > 0) {
+        setNebulaData(data);
+      } else {
+        alert("No tracks found in this playlist. Make sure it's a public playlist with tracks.");
+      }
     } catch (error: any) {
       console.error("Fetch error:", error);
       if (error.message?.includes("403")) {
@@ -73,7 +77,9 @@ export default function Home() {
   }, [status, session]);
 
   const handlePlaylistSubmit = (e: React.FormEvent) => {
+    console.log("Form submitted, preventing default...");
     e.preventDefault();
+    e.stopPropagation();
     if (playlistUrl) {
       fetchData(playlistUrl);
     }
@@ -144,10 +150,19 @@ export default function Home() {
                   placeholder="Paste Spotify Playlist URL..."
                   value={playlistUrl}
                   onChange={(e) => setPlaylistUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (playlistUrl) fetchData(playlistUrl);
+                    }
+                  }}
                   className="flex-1 bg-transparent border-none outline-none px-4 py-2 text-sm text-white placeholder:text-white-20"
                 />
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => {
+                    if (playlistUrl) fetchData(playlistUrl);
+                  }}
                   className="px-4 py-2 bg-white text-black text-xs font-bold rounded-full hover:bg-white-80 transition-colors uppercase tracking-widest"
                 >
                   Analyze
@@ -265,10 +280,19 @@ export default function Home() {
               placeholder="Paste Spotify Playlist URL to begin..."
               value={playlistUrl}
               onChange={(e) => setPlaylistUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (playlistUrl) fetchData(playlistUrl);
+                }
+              }}
               className="flex-1 bg-transparent border-none outline-none px-6 py-3 text-white placeholder:text-white-20"
             />
             <button
-              type="submit"
+              type="button"
+              onClick={() => {
+                if (playlistUrl) fetchData(playlistUrl);
+              }}
               className="px-8 py-3 bg-white text-black font-bold rounded-full hover:bg-white-80 transition-colors uppercase tracking-widest text-xs"
             >
               Visualize
