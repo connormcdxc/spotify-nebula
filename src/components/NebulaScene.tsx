@@ -16,17 +16,18 @@ export function NebulaScene({ data, onSelect, selectedStar }: NebulaSceneProps) 
   const [bgColor, setBgColor] = useState(new THREE.Color("#000000"));
 
   // Smoothly transition background color
-  // In a real app we'd extract colors from album art, here we'll simulate or use a prop
+  // Smoothly transition background color based on selected star
   useEffect(() => {
     if (selectedStar) {
-      // For now, let's just shift to a color based on valence if we don't have dominant color extractor yet
       const color = new THREE.Color();
-      if (selectedStar.valence < 0.5) {
-        color.setHSL(0.7, 0.5, 0.05); // Deep blue/purple
-      } else {
-        color.setHSL(0.05, 0.5, 0.05); // Deep gold/red
-      }
+      // Hue follows valence, but stays in deep/dark cosmic ranges
+      const hue = (selectedStar.valence * 0.5 + 0.5) % 1.0; 
+      // Keep background very dark for contrast (10% lightness)
+      color.setHSL(hue, 0.4, 0.08); 
       setBgColor(color);
+    } else {
+      // Default deep space black
+      setBgColor(new THREE.Color("#000000"));
     }
   }, [selectedStar]);
 

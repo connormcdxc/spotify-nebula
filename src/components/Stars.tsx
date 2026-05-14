@@ -28,14 +28,18 @@ export function Stars({ data, onSelect, selectedStar }: StarsProps) {
   const { raycaster, mouse, camera } = useThree();
   const [hovered, setHovered] = useState<number | null>(null);
 
-  // Map valence to color
-  const getColor = (valence: number) => {
+  // Map valence and energy to a wider, more vibrant color spectrum
+  const getColor = (valence: number, energy: number) => {
     const color = new THREE.Color();
-    if (valence < 0.5) {
-      color.setHSL(0.7 + valence * 0.2, 0.8, 0.5);
-    } else {
-      color.setHSL(0.1 + (valence - 0.5) * 0.2, 0.8, 0.6);
-    }
+    // Use HSL for maximum vibrance
+    // Hue: Valence (0 = Purple/Blue, 0.5 = Green/Cyan, 1.0 = Orange/Pink)
+    // Saturation: High energy = more saturated
+    // Lightness: High energy = brighter
+    const hue = (valence * 0.7 + 0.6) % 1.0; // Shift hue for a cosmic feel
+    const saturation = 0.4 + (energy * 0.6);
+    const lightness = 0.4 + (energy * 0.4);
+    
+    color.setHSL(hue, saturation, lightness);
     return color;
   };
 
@@ -46,7 +50,6 @@ export function Stars({ data, onSelect, selectedStar }: StarsProps) {
 
     // 1. Calculate Spatial Positions based on Audio Features
     data.forEach((star, i) => {
-      // Map features to -30 to 30 range
       const spread = 60;
       const x = (star.valence - 0.5) * spread;
       const y = (star.energy - 0.5) * spread;
@@ -59,12 +62,13 @@ export function Stars({ data, onSelect, selectedStar }: StarsProps) {
       positions[i * 3 + 1] = y + (Math.cos(idHash) * noise);
       positions[i * 3 + 2] = z + (Math.sin(idHash * 0.5) * noise);
 
-      const color = getColor(star.valence);
+      const color = getColor(star.valence, star.energy);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
 
-      sizes[i] = 4.0 + star.energy * 8.0;
+      // Dramatically increase size variance (2.0 to 18.0 range)
+      sizes[i] = 2.0 + Math.pow(star.energy, 2) * 16.0;
     });
 
     // 2. Calculate Constellation Lines
