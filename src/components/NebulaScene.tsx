@@ -2,14 +2,14 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Float, Stars as DreiStars } from "@react-three/drei";
-import { Stars } from "./Stars";
+import { Stars, StarData } from "./Stars";
 import { Suspense, useState, useEffect } from "react";
 import * as THREE from "three";
 
 interface NebulaSceneProps {
-  data: any[];
-  onSelect: (star: any) => void;
-  selectedStar: any;
+  data: StarData[];
+  onSelect: (star: StarData) => void;
+  selectedStar: StarData | null;
 }
 
 export function NebulaScene({ data, onSelect, selectedStar }: NebulaSceneProps) {

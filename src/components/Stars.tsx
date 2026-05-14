@@ -5,7 +5,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { StarShader } from "./StarShader";
 
-interface StarData {
+export interface StarData {
   id: string;
   name: string;
   artist: string;

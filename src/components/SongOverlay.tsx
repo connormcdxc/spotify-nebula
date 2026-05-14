@@ -29,6 +29,7 @@ export function SongOverlay({ song, onClose }: SongOverlayProps) {
           </button>
 
           <iframe 
+            title="Spotify Player"
             src={`https://open.spotify.com/embed/track/${song.id}?utm_source=generator&theme=0`}
             width="100%" 
             height="80" 
