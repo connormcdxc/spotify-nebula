@@ -74,6 +74,7 @@ export async function getPlaylistTracks(accessToken: string, playlistId: string)
   }
 
   const data = await response.json();
+  console.log(`Raw Spotify Playlist fetch successful. Tracks found: ${!!data.tracks}, Items found: ${!!data.tracks?.items}`);
   return data.tracks; // Extract the tracks object
 }
 

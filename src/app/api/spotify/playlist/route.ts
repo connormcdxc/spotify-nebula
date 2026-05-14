@@ -45,6 +45,11 @@ export async function GET(request: Request) {
     let data;
     try {
       data = await getPlaylistTracks(token, playlistId);
+      console.log(`Playlist Data Received for ${playlistId}:`, {
+        hasData: !!data,
+        hasItems: !!data?.items,
+        itemCount: data?.items?.length || 0
+      });
     } catch (err: any) {
       console.error("Spotify API Error:", err.message);
       // Re-throw with more context
