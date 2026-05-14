@@ -15,7 +15,7 @@ export async function getTopTracks(accessToken: string) {
 }
 
 // Simple deterministic hash function to generate consistent numbers from a string
-function stringToHash(string: string) {
+export function stringToHash(string: string) {
   let hash = 0;
   for (let i = 0; i < string.length; i++) {
     const char = string.charCodeAt(i);
