@@ -61,7 +61,8 @@ export async function getNebulaData(accessToken: string) {
 }
 
 export async function getPlaylistTracks(accessToken: string, playlistId: string) {
-  const response = await fetch(`${SPOTIFY_ENDPOINT}/playlists/${playlistId}/tracks?limit=50`, {
+  // Using the root playlist endpoint can sometimes be more permissive for guest tokens
+  const response = await fetch(`${SPOTIFY_ENDPOINT}/playlists/${playlistId}?market=US`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -69,10 +70,11 @@ export async function getPlaylistTracks(accessToken: string, playlistId: string)
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`Failed to fetch playlist tracks: ${response.status} ${response.statusText} - ${errorBody}`);
+    throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText} - ${errorBody}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return data.tracks; // Extract the tracks object
 }
 
 export async function getNebulaDataFromPlaylist(accessToken: string, playlistId: string) {

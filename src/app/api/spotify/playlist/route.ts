@@ -15,7 +15,8 @@ export async function GET(request: Request) {
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: "Missing Spotify credentials" }, { status: 500 });
+      console.error("CRITICAL: Missing Spotify Credentials in Environment Variables");
+      return NextResponse.json({ error: "Missing Spotify credentials on server" }, { status: 500 });
     }
 
     const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
@@ -28,17 +29,27 @@ export async function GET(request: Request) {
       body: new URLSearchParams({
         grant_type: "client_credentials",
       }),
+      cache: "no-store"
     });
 
     const tokenData = await tokenRes.json();
     if (!tokenRes.ok) {
-      throw new Error(tokenData.error || "Failed to get access token");
+      console.error("Token Fetch Failed:", tokenData);
+      throw new Error(`Token Auth Failed: ${tokenData.error || "Unknown Error"}`);
     }
 
     const token = tokenData.access_token;
+    if (!token) throw new Error("Received empty access token from Spotify");
 
     // 2. Fetch Playlist Tracks
-    const data = await getPlaylistTracks(token, playlistId);
+    let data;
+    try {
+      data = await getPlaylistTracks(token, playlistId);
+    } catch (err: any) {
+      console.error("Spotify API Error:", err.message);
+      // Re-throw with more context
+      throw new Error(`Spotify rejected request: ${err.message}`);
+    }
     
     if (!data?.items) {
       return NextResponse.json({ data: [] });
