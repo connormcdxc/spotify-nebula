@@ -17,13 +17,13 @@ export function SongOverlay({ song, onClose }: SongOverlayProps) {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="fixed bottom-[50px] left-0 right-0 z-50 px-4 md:px-12 pointer-events-none"
+        className="fixed bottom-50 left-0 right-0 z-50 px-4 md:px-12 pointer-events-none"
       >
-        <div className="max-w-[800px] mx-auto pointer-events-auto relative group">
+        <div className="max-w-800 mx-auto pointer-events-auto relative group">
           {/* Close Button - Floats above the player */}
           <button 
             onClick={onClose}
-            className="absolute -top-4 -right-4 z-[60] p-2 bg-black/60 backdrop-blur-xl border border-white/10 text-white/40 hover:text-white rounded-full transition-all opacity-0 group-hover:opacity-100 shadow-xl"
+            className="absolute -top-4 -right-4 z-[60] p-2 bg-black-60 backdrop-blur-xl border border-white-10 text-white-40 hover:text-white rounded-full transition-all opacity-0 group-hover:opacity-100 shadow-xl"
           >
             <X size={16} />
           </button>
