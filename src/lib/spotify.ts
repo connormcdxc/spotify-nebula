@@ -73,9 +73,23 @@ export async function getPlaylistTracks(accessToken: string, playlistId: string)
     throw new Error(`Failed to fetch playlist: ${response.status} ${response.statusText} - ${errorBody}`);
   }
 
-  const data = await response.json();
-  console.log(`Raw Spotify Playlist fetch successful. Tracks found: ${!!data.tracks}, Items found: ${!!data.tracks?.items}`);
-  return data.tracks; // Extract the tracks object
+  let data = await response.json();
+  console.log(`Raw Spotify Playlist fetch successful. Keys found: ${Object.keys(data).join(", ")}`);
+  console.log(`Tracks field present: ${!!data.tracks}, Items in tracks: ${!!data.tracks?.items}`);
+  
+  // Fallback: If root endpoint doesn't return tracks, try the specific items endpoint
+  if (!data.tracks || !data.tracks.items || data.tracks.items.length === 0) {
+    console.log("No tracks found in root object, trying /items sub-endpoint...");
+    const itemsRes = await fetch(`${SPOTIFY_ENDPOINT}/playlists/${playlistId}/items?limit=50&market=US`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (itemsRes.ok) {
+      const itemsData = await itemsRes.json();
+      if (itemsData) return itemsData;
+    }
+  }
+
+  return data.tracks; 
 }
 
 export async function getNebulaDataFromPlaylist(accessToken: string, playlistId: string) {
