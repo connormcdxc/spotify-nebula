@@ -22,29 +22,8 @@ export default function Home() {
   const fetchData = async (url?: string) => {
     setLoading(true);
     try {
-      let token = session?.accessToken;
-      
-      // If no session but we have a URL, get a temporary anonymous token
-      if (!token && url) {
-        const res = await fetch("/api/spotify/token");
-        const tokenData = await res.json();
-        
-        if (tokenData.error) {
-          console.error("Token Error:", tokenData.error);
-          alert(`Auth Error: ${tokenData.error}`);
-          return;
-        }
-        
-        token = tokenData.accessToken;
-        console.log("Anonymous token acquired");
-      }
-
-      if (!token) {
-        if (url) alert("Could not get access token for playlist.");
-        return;
-      }
-
       let data;
+      
       if (url) {
         // Robust ID extraction
         let playlistId = "";
@@ -53,26 +32,33 @@ export default function Home() {
         } else if (url.includes("spotify:playlist:")) {
           playlistId = url.split("spotify:playlist:")[1];
         } else if (!url.includes("/") && url.length > 10) {
-          playlistId = url; // Assume it's a direct ID
+          playlistId = url;
         }
 
         if (playlistId) {
-          const { getNebulaDataFromPlaylist } = await import("@/lib/spotify");
-          data = await getNebulaDataFromPlaylist(token, playlistId);
+          // Use our new server-side proxy
+          const res = await fetch(`/api/spotify/playlist?playlistId=${playlistId}`);
+          const result = await res.json();
+          if (result.error) throw new Error(result.error);
+          data = result.data;
         } else {
           alert("Invalid Spotify Playlist URL. Please copy it from the 'Share' menu in Spotify.");
+          setLoading(false);
+          return;
         }
-      } else if (session) {
-        data = await getNebulaData(token);
+      } else if (session?.accessToken) {
+        // Only fetch top tracks if we have a session
+        const { getNebulaData } = await import("@/lib/spotify");
+        data = await getNebulaData(session.accessToken);
       }
       
       if (data) setNebulaData(data);
     } catch (error: any) {
       console.error("Fetch error:", error);
       if (error.message?.includes("403")) {
-        alert("🔒 Access Denied (403): This playlist appears to be private. Please make the playlist 'Public' in Spotify, or 'Connect Your Identity' first if it's your own playlist.");
+        alert("🔒 Access Denied (403): This playlist appears to be private. The anonymous viewer can only see Public playlists.");
       } else {
-        alert("Failed to fetch galaxy data. Please check the console for details.");
+        alert(`Error: ${error.message || "Failed to fetch galaxy data"}`);
       }
     } finally {
       setLoading(false);
