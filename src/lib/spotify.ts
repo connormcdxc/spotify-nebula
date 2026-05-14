@@ -74,8 +74,6 @@ export async function getPlaylistTracks(accessToken: string, playlistId: string)
   }
 
   let data = await response.json();
-  console.log(`Raw Spotify Playlist fetch successful. Keys found: ${Object.keys(data).join(", ")}`);
-  console.log(`Tracks field present: ${!!data.tracks}, Items in tracks: ${!!data.tracks?.items}`);
   
   // Fallback: If root endpoint doesn't return tracks, try the specific items endpoint
   if (!data.tracks || !data.tracks.items || data.tracks.items.length === 0) {
