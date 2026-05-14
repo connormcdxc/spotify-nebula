@@ -101,6 +101,33 @@ export default function Home() {
         onClose={() => setSelectedStar(null)}
       />
 
+      <div className="fixed bottom-8 left-8 z-50 pointer-events-none">
+        <div className="p-4 bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl space-y-4">
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold">Spatial Mapping</p>
+            <div className="text-[11px] text-white/70 flex gap-4">
+              <span><span className="text-white font-bold">X:</span> Mood</span>
+              <span><span className="text-white font-bold">Y:</span> Energy</span>
+              <span><span className="text-white font-bold">Z:</span> Dance</span>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold">Visual Signatures</p>
+            <div className="flex flex-col gap-1 text-[11px] text-white/70">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-pink-500" />
+                <span>Color = Valence (Mood)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-white scale-75" />
+                <div className="w-2 h-2 rounded-full bg-white scale-125" />
+                <span>Size = Energy (Intensity)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="fixed top-8 left-8 z-50">
         <div className="flex items-center gap-3 p-2 pr-6 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full">
           {session.user?.image ? (
