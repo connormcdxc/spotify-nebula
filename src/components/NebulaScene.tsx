@@ -48,7 +48,7 @@ export function NebulaScene({ data, onSelect, selectedStar }: NebulaSceneProps) 
           <pointLight position={[10, 10, 10]} intensity={1} />
 
           <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
-             <Stars data={data} onSelect={onSelect} />
+             <Stars data={data} onSelect={onSelect} selectedStar={selectedStar} />
           </Float>
 
           {/* Background decoration stars */}
