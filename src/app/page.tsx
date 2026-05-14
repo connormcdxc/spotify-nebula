@@ -28,7 +28,15 @@ export default function Home() {
       if (!token && url) {
         const res = await fetch("/api/spotify/token");
         const tokenData = await res.json();
+        
+        if (tokenData.error) {
+          console.error("Token Error:", tokenData.error);
+          alert(`Auth Error: ${tokenData.error}`);
+          return;
+        }
+        
         token = tokenData.accessToken;
+        console.log("Anonymous token acquired");
       }
 
       if (!token) {
